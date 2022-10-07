@@ -38,6 +38,25 @@ head(gas)
 ```
 ## Make the table
 ```{r}
+# make table
+gas_table <- gas %>%
+  select(Name, Owner,Capacity,percent,cum_per) %>%
+  kbl(escape = FALSE,
+      col.names = c("Name",
+                    "Owner",
+                    "Capacity",
+                    "Percentage",
+                    "Cumulative Percentage"
+                    ),
+      align = c("l","l","r","r"),
+      digits = 4) %>%
+  #add_header_above(c(" ", "14-day average" = 4, " ", "14-day average per 100k" = 2)) %>%
+  kable_styling(font_size=18, fixed_thead = TRUE)%>%
+  scroll_box(width = "100%", height = "700px")
+gas_table
+```
+## Make another table
+```{r}
 gas_table2 <- gas %>%
   select(rank,Name, Owner, Capacity, percent, cum_per,percentile) %>%
   reactable(
