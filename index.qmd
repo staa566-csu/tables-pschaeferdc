@@ -39,21 +39,22 @@ head(gas)
 ## Make the table
 ```{r}
 gas_table2 <- gas %>%
-  select(rank,Name, Owner, Capacity, percent, cum_per,percentile) %>%
+  select(rank,Name, Owner, Capacity,percentile) %>%
   reactable(
+    defaultColDef = colDef(align = 'center'),
     columns = list(
-      rank = colDef(name = "Rank"),
-      Name = colDef(name = "Name"),
-      Owner = colDef(name = "Owner"),
-      Capacity = colDef(name = "Capacity (M cu. ft. per day)"),
-      percent= colDef(name = "Percent", format=colFormat(digits=3)),
-      cum_per= colDef(name = "Cumulative Percent", format=colFormat(digits=3)),
-      percentile = colDef(name = 'Percentile')),
+      rank = colDef(name = "Rank", align = 'right'),
+      Name = colDef(name = "Name", align = 'left'),
+      Owner = colDef(name = "Owner", align = 'left'),
+      Capacity = colDef(name = "Capacity (M cu. ft. per day)", align = 'right'),
+      percentile = colDef(name = 'Percentile'), align = 'right'),
     style = list(fontSize = "1rem"))
 gas_table2
 ```
 
 This table is based on a work project a few years back when we attempted to determine whether there were parts of the US energy infrastructure that contributed a 'dispoportionate' amount to the overall capacity. We wanted to know if there were a 'relatively small' number of production facilities that produced a 'relatively large' percentage of different outputs. That project involved Excel, which meant the tables were dreadful, so we ended up putting the results on a map instead. This is an attempt to produce a table that gives the same information.
+
+I limited the coulmns to the ones that we would have used for the project: the name, owner, capacity, and the percentile that the plant fell in. 
 
 The data source is a .csv downloaded from the US Energy Information Agency website: https://www.eia.gov/naturalgas/ngqs/#?report=RP9&year1=2017&year2=2017&company=Name 
 The data is based on 2017 reporting and was released in 2019.
