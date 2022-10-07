@@ -5,6 +5,27 @@ format: html
 editor: visual
 ---
 
-## Data import and cleaning
+```{r}
+# Inport libraries
+library(tidyverse)
+```
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Data import and cleaning
+```{r message = FALSE}
+gas <- read_csv("C:\\Users\\pscha\\Documents\\_School\\2022_Fall_Classes\\STAA_566_DataViz\\natgas.csv")
+gas <- gas[complete.cases(gas[ , 8]),]
+cap <- sum(gas$Capacity)
+typeof(gas$Capacity)
+typeof(cap)
+gas <- gas %>%
+  mutate(percent=Capacity/cap)
+gas <- gas[order(-gas$percent),]
+gas <- gas %>%
+  mutate(cum_per=cumsum(percent))
+head(gas)
+```
+This table is based on a work project a few years back when we attempted to determine whether there were parts of the US energy infrastructure that contributed a 'dispoportionate' amount to the overall capacity. We wanted to know if there were a 'relatively small' number of production facilities that produced a 'relatively large' percentage of different outputs. That project involved Excel, which meant the tables were dreadful, so we ended up putting the results on a map instead. This is an attempt to produce a table that gives the same information.
+
+The data source is a .csv downloaded from the US Energy Information Agency website: https://www.eia.gov/naturalgas/ngqs/#?report=RP9&year1=2017&year2=2017&company=Name 
+The data is based on 2017 reporting and was released in 2019.
