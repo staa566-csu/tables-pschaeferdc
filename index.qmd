@@ -39,12 +39,13 @@ head(gas)
 ## Make the table
 ```{r}
 gas_table2 <- gas %>%
-  select(rank,Name, Owner, Capacity,percentile) %>%
+  select(rank,Name, Owner, State, Capacity,percentile) %>%
   reactable(
     defaultColDef = colDef(align = 'center'),
     columns = list(
       rank = colDef(name = "Rank", align = 'right'),
       Name = colDef(name = "Name", align = 'left'),
+      State = colDef(name = "State", align = 'left'),
       Owner = colDef(name = "Owner", align = 'left'),
       Capacity = colDef(name = "Capacity (M cu. ft. per day)", align = 'right'),
       percentile = colDef(name = 'Percentile'), align = 'right'),
@@ -54,7 +55,7 @@ gas_table2
 
 This table is based on a work project a few years back when we attempted to determine whether there were parts of the US energy infrastructure that contributed a 'dispoportionate' amount to the overall capacity. We wanted to know if there were a 'relatively small' number of production facilities that produced a 'relatively large' percentage of different outputs. That project involved Excel, which meant the tables were dreadful, so we ended up putting the results on a map instead. This is an attempt to produce a table that gives the same information.
 
-I limited the coulmns to the ones that we would have used for the project: the name, owner, capacity, and the percentile that the plant fell in. 
+I limited the coulmns to the ones that we would have used for the project: the name, owner, capacity, and the percentile that the plant fell in. Due to the size of the data, I wanted tabs, so I used the reactable() package for the table.  I had some code problems with the percentiles - there are some plants with the same capacity, so they assigned percentiles by the order they were originally in, but sorting on 'Capacity' will slightly mis-order them.
 
 The data source is a .csv downloaded from the US Energy Information Agency website: https://www.eia.gov/naturalgas/ngqs/#?report=RP9&year1=2017&year2=2017&company=Name 
 The data is based on 2017 reporting and was released in 2019.
