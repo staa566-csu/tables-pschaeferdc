@@ -1,0 +1,78 @@
+---
+title: "STAA566_Schaefer_hw4"
+author: "Paul Schaefer"
+format: html
+editor: visual
+---
+
+```{r}
+# Inport libraries
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(reactable)
+```
+
+
+## Data import and cleaning
+```{r message = FALSE}
+gas <- read_csv("C:\\Users\\pscha\\Documents\\_School\\2022_Fall_Classes\\STAA_566_DataViz\\natgas.csv")
+gas <- gas[complete.cases(gas[ , 8]),] # get rid on NAs in Capacity
+cap <- sum(gas$Capacity)
+rank <- c(1:nrow(gas))
+gas <- gas %>%
+  mutate(percent=Capacity/cap) #calculate percentage of total
+gas <- gas[order(-gas$percent),]
+gas <- gas %>%
+  mutate(cum_per=cumsum(percent),rank = rank)%>%# calculate cumulative percentage
+  mutate(percentile = case_when(cum_per<=.05 ~ '5th',
+                                cum_per<=.1 & cum_per > .05 ~ '10th',
+                                cum_per<=.2 & cum_per > .1 ~ '20th',
+                                cum_per > .2 ~ 'higher'))#%>%
+  #mutate(display = case_when(cum_per<=.05 ~ cell_spec,
+  #                              cum_per<=.1 & cum_per > .05 ~ '10',
+  #                              cum_per<=.2 & cum_per > .1 ~ '20',
+  #                              cum_per > .2 ~ 'higher')))
+
+head(gas)
+```
+## Make the table
+```{r}
+# make table
+gas_table <- gas %>%
+  select(Name, Owner,Capacity,percent,cum_per) %>%
+  kbl(escape = FALSE,
+      col.names = c("Name",
+                    "Owner",
+                    "Capacity",
+                    "Percentage",
+                    "Cumulative Percentage"
+                    ),
+      align = c("l","l","r","r"),
+      digits = 4) %>%
+  #add_header_above(c(" ", "14-day average" = 4, " ", "14-day average per 100k" = 2)) %>%
+  kable_styling(font_size=18, fixed_thead = TRUE)%>%
+  scroll_box(width = "100%", height = "700px")
+gas_table
+```
+## Make another table
+```{r}
+gas_table2 <- gas %>%
+  select(rank,Name, Owner, Capacity, percent, cum_per,percentile) %>%
+  reactable(
+    columns = list(
+      rank = colDef(name = "Rank"),
+      Name = colDef(name = "Name"),
+      Owner = colDef(name = "Owner"),
+      Capacity = colDef(name = "Capacity (M cu. ft. per day)"),
+      percent= colDef(name = "Percent", format=colFormat(digits=3)),
+      cum_per= colDef(name = "Cumulative Percent", format=colFormat(digits=3)),
+      percentile = colDef(name = 'Percentile')),
+    style = list(fontSize = "1rem"))
+gas_table2
+```
+
+This table is based on a work project a few years back when we attempted to determine whether there were parts of the US energy infrastructure that contributed a 'dispoportionate' amount to the overall capacity. We wanted to know if there were a 'relatively small' number of production facilities that produced a 'relatively large' percentage of different outputs. That project involved Excel, which meant the tables were dreadful, so we ended up putting the results on a map instead. This is an attempt to produce a table that gives the same information.
+
+The data source is a .csv downloaded from the US Energy Information Agency website: https://www.eia.gov/naturalgas/ngqs/#?report=RP9&year1=2017&year2=2017&company=Name 
+The data is based on 2017 reporting and was released in 2019.
